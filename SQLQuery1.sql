@@ -113,6 +113,8 @@ CREATE TABLE Atencion.Citas(
 
 	CONSTRAINT pk_cita 
 		PRIMARY KEY(idCita),
+	CONSTRAINT ck_estado
+		CHECK(estado IN ('Programada', 'Completada')),
 	CONSTRAINT fk_paciente 
 		FOREIGN KEY(idPaciente) 
 		REFERENCES Admision.Pacientes(idPaciente),
@@ -465,3 +467,94 @@ VALUES
 	(9,75),
 	(10,500);
 GO
+
+-----------------------------------------------------------
+-- Modulo VI - Update
+-----------------------------------------------------------
+UPDATE Admision.Pacientes
+	SET telefono = '88881000'
+	WHERE idPaciente = 1
+GO
+
+UPDATE Admision.Pacientes
+	SET direccion = 'Niquinohomo'
+	WHERE idPaciente = 1
+GO
+
+UPDATE Atencion.Medicos
+	SET salario = 2000
+	WHERE idMedico = 2
+GO
+
+UPDATE Atencion.Medicos
+	SET turno = 'Nocturno'
+	WHERE idMedico = 1
+GO
+
+UPDATE Atencion.Citas
+	SET estado = 'Completada'
+	WHERE idCita = 6
+GO
+
+UPDATE Atencion.Citas
+	SET costoConsulta = 30 
+	WHERE idCita = 6
+GO
+
+UPDATE Atencion.Especialidades
+	SET nombre = N'Cirugía General'
+	WHERE idEspecialidad = 5
+GO
+
+-- Cambiar disponibilidad de las habitaciones
+
+UPDATE Admision.Habitaciones 
+	SET idPaciente = NULL
+	WHERE idHabitacion = 3
+GO
+
+UPDATE Admision.Habitaciones
+	SET disponibilidad = 'Disponible'
+	WHERE idHabitacion = 3
+GO
+
+-- Tratamiento activo
+
+UPDATE Farmacia.DetallesTratamientos
+	SET dosis = 15
+	WHERE idTratamiento = 5
+GO
+
+-- Modificar medicamento
+UPDATE Farmacia.Medicamentos
+	SET nombre = 'Paracetamoles'
+	WHERE idMedicamento = 1
+GO
+
+-- Modificar correos
+UPDATE Admision.Pacientes
+	SET email = 'Mamita69@yopmail.com'
+	WHERE idPaciente = 1
+GO
+
+UPDATE Atencion.Medicos
+	SET email = 'Mamita96@yopmail.com'
+	WHERE idMedico = 1
+GO
+
+UPDATE Atencion.Citas
+	SET fechaHora = GETDATE()
+	WHERE idCita = 1
+GO
+
+UPDATE Atencion.Medicos
+	SET experiencia = N'11 años'
+	WHERE idMedico = 1
+GO
+
+UPDATE Admision.Pacientes
+	SET tipoSangre = N'O-'
+	WHERE idPaciente = 1
+GO
+
+SELECT * FROM Admision.Pacientes
