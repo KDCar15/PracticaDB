@@ -1,3 +1,13 @@
+USE master
+GO
+
+IF EXISTS(SELECT * FROM sys.databases WHERE NAME = 'HospitalDB')
+	BEGIN
+		ALTER DATABASE HospitalDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+		DROP DATABASE HospitalDB
+	END
+GO
+
 CREATE DATABASE HospitalDB
 GO
 
@@ -7,23 +17,26 @@ GO
 USE HospitalDB
 GO
 
--- Creación de tablas
-CREATE TABLE Especialidades(
-	idEspecialidad INT IDENTITY(1,1),
-	nombre NVARCHAR(100) NOT NULL,
-
-	CONSTRAINT pk_especialidad
-		PRIMARY KEY(idEspecialidad),
-)
+-- Creacion de Schemas
+CREATE SCHEMA Admision
 GO
 
-CREATE TABLE Pacientes
+CREATE SCHEMA Atencion
+GO
+
+CREATE SCHEMA Farmacia	
+GO
+-------------------------------------
+-- Creación de tablas
+-------------------------------------
+-- Esquema Admision
+
+CREATE TABLE Admision.Pacientes
 (
 	idPaciente INT IDENTITY(1,1),
 	nombres NVARCHAR(100) NOT NULL,
 	apellidos NVARCHAR(100) NOT NULL,
 	email NVARCHAR(100) NOT NULL,
-	fechaNac DATE NOT NULL,
 
 	createdAt DATETIME DEFAULT getDate(),
 	updatedAt DATETIME NULL,
@@ -38,7 +51,7 @@ CREATE TABLE Pacientes
 )
 GO
 
-CREATE TABLE Habitaciones(
+CREATE TABLE Admision.Habitaciones(
 	idHabitacion INT IDENTITY(1,1),
 	codigo NVARCHAR(4) NOT NULL,
 	
@@ -48,17 +61,28 @@ CREATE TABLE Habitaciones(
 		PRIMARY KEY(idHabitacion),
 	CONSTRAINT fk_paciente 
 		FOREIGN KEY(idPaciente)
-		REFERENCES Pacientes(idPaciente),
+		REFERENCES Admision.Pacientes(idPaciente),
 )
 GO
 
-CREATE TABLE Medicos(
+-- Esquema Atencion
+CREATE TABLE Atencion.Especialidades(
+	idEspecialidad INT IDENTITY(1,1),
+	nombre NVARCHAR(100) NOT NULL,
+
+	CONSTRAINT pk_especialidad
+		PRIMARY KEY(idEspecialidad),
+)
+GO
+
+CREATE TABLE Atencion.Medicos(
 	idMedico INT IDENTITY(1,1),
 	nombres NVARCHAR(100) NOT NULL,
 	apellidos NVARCHAR(100) NOT NULL,
 	email NVARCHAR(100) NOT NULL,
 	direccion NVARCHAR(100),
-	fechaNac DATE NOT NULL,
+	salario DECIMAL NOT NULL,
+	
 	idEspecialidad INT,
 
 	createdAt DATETIME DEFAULT getDate(),
@@ -69,18 +93,20 @@ CREATE TABLE Medicos(
 		PRIMARY KEY(idMedico),
 	CONSTRAINT fk_especialidad 
 		FOREIGN KEY(idEspecialidad) 
-		REFERENCES Especialidades(idEspecialidad),
-
+		REFERENCES Atencion.Especialidades(idEspecialidad),
 	CONSTRAINT uq_email
 		UNIQUE(email),
 	CONSTRAINT ck_email
-		CHECK(email like N'%@%.%')
+		CHECK(email LIKE N'%@%.%'),
+	CONSTRAINT ck_salario
+		CHECK(salario > 0)
 )
 GO
 
-CREATE TABLE Citas(
+CREATE TABLE Atencion.Citas(
 	idCita INT IDENTITY(1,1),
 	fechaHora datetime,
+	estado nvarchar(30),
 	
 	idPaciente INT,
 	idMedico INT,
@@ -89,14 +115,17 @@ CREATE TABLE Citas(
 		PRIMARY KEY(idCita),
 	CONSTRAINT fk_paciente 
 		FOREIGN KEY(idPaciente) 
-		REFERENCES Pacientes(idPaciente),
+		REFERENCES Admision.Pacientes(idPaciente),
 	CONSTRAINT fk_medico 
 		FOREIGN KEY(idMedico) 
-		REFERENCES Medicos(idMedico)
+		REFERENCES Atencion.Medicos(idMedico)
 )
 GO
 
-CREATE TABLE Tratamientos(
+
+-- Esquema Farmacia
+
+CREATE TABLE Farmacia.Tratamientos(
 	idTratamiento int IDENTITY(1,1),
 	idPaciente int,
 
@@ -108,11 +137,11 @@ CREATE TABLE Tratamientos(
 		PRIMARY KEY(idTratamiento),
 	CONSTRAINT fk_paciente 
 		FOREIGN KEY(idPaciente) 
-		REFERENCES Pacientes(idPaciente),
+		REFERENCES Admision.Pacientes(idPaciente),
 )
 GO
 
-CREATE TABLE Medicamentos(
+CREATE TABLE Farmacia.Medicamentos(
 	idMedicamento int IDENTITY(1,1),
 	nombre nvarchar(50) NOT NULL,
 
@@ -125,7 +154,7 @@ CREATE TABLE Medicamentos(
 )
 GO
 
-CREATE TABLE DetallesTratamientos(
+CREATE TABLE Farmacia.DetallesTratamientos(
 	idTratamiento int IDENTITY(1,1),
 	idMedicamento int NOT NULL,
 	dosis float,
@@ -134,10 +163,23 @@ CREATE TABLE DetallesTratamientos(
 	updatedAt DATETIME NULL,
 	deletedAt DATETIME NULL,
 
-	CONSTRAINT pk_tratamiento 
-		PRIMARY KEY(idTratamiento),
+	CONSTRAINT pk_detallest
+		PRIMARY KEY(idTratamiento, idMedicamento),
+	CONSTRAINT fk_tratamiento 
+		FOREIGN KEY(idTratamiento)
+		REFERENCES Farmacia.Tratamientos(idTratamiento),
 	CONSTRAINT fk_medicamento 
 		FOREIGN KEY(idMedicamento) 
-		REFERENCES Medicamentos(idMedicamento)
+		REFERENCES Farmacia.Medicamentos(idMedicamento)
 )
 GO
+
+-- Pacientes
+-- direccion NVARCHAR(100),
+-- fechaNac DATE NOT NULL,
+
+-- Medicos
+-- fechaNac DATE NOT NULL,
+-- turno NVARCHAR(30),
+-- CONSTRAINT ck_turno
+--		CHECK(turno IN (N'Matutino', N'Vespertino', N'Nocturno')),
