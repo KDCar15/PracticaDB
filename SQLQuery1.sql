@@ -114,7 +114,7 @@ CREATE TABLE Atencion.Citas(
 	CONSTRAINT pk_cita 
 		PRIMARY KEY(idCita),
 	CONSTRAINT ck_estado
-		CHECK(estado IN ('Programada', 'Completada')),
+		CHECK(estado IN ('Programada', 'Completada', 'Cancelada')),
 	CONSTRAINT fk_paciente 
 		FOREIGN KEY(idPaciente) 
 		REFERENCES Admision.Pacientes(idPaciente),
@@ -146,6 +146,7 @@ GO
 CREATE TABLE Farmacia.Medicamentos(
 	idMedicamento int IDENTITY(1,1),
 	nombre nvarchar(50) NOT NULL,
+	fechaExp date NOT NULL,
 
 	createdAt DATETIME DEFAULT getDate(),
 	updatedAt DATETIME NULL,
@@ -397,11 +398,11 @@ VALUES
 	(DATEADD(DAY,4,GETDATE()),'Programada',9,9,20),
 	(DATEADD(DAY,5,GETDATE()),'Programada',10,10,40),
 
-	(DATEADD(DAY,6,GETDATE()),'Programada',11,1,25),
-	(DATEADD(DAY,7,GETDATE()),'Programada',12,2,30),
-	(DATEADD(DAY,8,GETDATE()),'Programada',13,3,35),
-	(DATEADD(DAY,9,GETDATE()),'Programada',14,4,20),
-	(DATEADD(DAY,10,GETDATE()),'Programada',15,5,40);
+	(DATEADD(DAY,6,GETDATE()),'Cancelada',11,1,25),
+	(DATEADD(DAY,7,GETDATE()),'Cancelada',12,2,30),
+	(DATEADD(DAY,8,GETDATE()),'Cancelada',13,3,35),
+	(DATEADD(DAY,9,GETDATE()),'Cancelada',14,4,20),
+	(DATEADD(DAY,10,GETDATE()),'Cancelada',15,5,40);
 GO
 
 INSERT INTO Admision.Habitaciones(codigo,idPaciente, disponibilidad) VALUES
@@ -429,28 +430,28 @@ UPDATE Farmacia.Tratamientos
 	WHERE idTratamiento IN (6,7,8,9,10);
 GO
 
-INSERT INTO Farmacia.Medicamentos(nombre)
+INSERT INTO Farmacia.Medicamentos(nombre, fechaExp)
 VALUES
-	('Paracetamol'),
-	('Ibuprofeno'),
-	('Amoxicilina'),
-	('Omeprazol'),
-	('Loratadina'),
-	('Metformina'),
-	('Losartan'),
-	('Aspirina'),
-	('Diclofenaco'),
-	('Azitromicina'),
-	('Claritromicina'),
-	('Insulina'),
-	('Salbutamol'),
-	('Prednisona'),
-	('Cefalexina'),
-	('Vitamina C'),
-	('Vitamina D'),
-	('Acetaminofen'),
-	('Enalapril'),
-	('Ranitidina');
+	('Paracetamol', DATEADD(YEAR, 5, GETDATE())),
+	('Ibuprofeno', DATEADD(YEAR, 5, GETDATE())),
+	('Amoxicilina', DATEADD(YEAR, 5, GETDATE())),
+	('Omeprazol', DATEADD(YEAR, 5, GETDATE())),
+	('Loratadina', DATEADD(YEAR, 5, GETDATE())),
+	('Metformina', DATEADD(YEAR, 5, GETDATE())),
+	('Losartan', DATEADD(YEAR, 5, GETDATE())),
+	('Aspirina', DATEADD(YEAR, 5, GETDATE())),
+	('Diclofenaco', DATEADD(YEAR, 5, GETDATE())),
+	('Azitromicina', DATEADD(YEAR, 5, GETDATE())),
+	('Claritromicina', DATEADD(YEAR, 5, GETDATE())),
+	('Insulina', DATEADD(YEAR, 5, GETDATE())),
+	('Salbutamol', DATEADD(YEAR, 5, GETDATE())),
+	('Prednisona', DATEADD(YEAR, 5, GETDATE())),
+	('Cefalexina', DATEADD(YEAR, 5, GETDATE())),
+	('Vitamina C', GETDATE()),
+	('Vitamina D', GETDATE()),
+	('Acetaminofen', GETDATE()),
+	('Enalapril', DATEADD(YEAR, 5, GETDATE())),
+	('Ranitidina', DATEADD(YEAR, 5, GETDATE()));
 GO
 
 INSERT INTO Farmacia.DetallesTratamientos
@@ -558,3 +559,47 @@ UPDATE Admision.Pacientes
 GO
 
 SELECT * FROM Admision.Pacientes
+-------------------------------------
+-- Modulo VII - DELETE
+-------------------------------------
+
+-- 1. Eliminar paciente específico
+UPDATE Admision.Habitaciones
+SET idPaciente = NULL
+WHERE idPaciente = 1;
+GO
+
+DELETE FROM Atencion.Citas
+WHERE idPaciente = 1;
+GO
+
+DELETE FROM Farmacia.DetallesTratamientos
+WHERE idTratamiento IN
+(
+    SELECT idTratamiento
+    FROM Farmacia.Tratamientos
+    WHERE idPaciente = 1
+);
+GO
+
+DELETE FROM Farmacia.Tratamientos
+WHERE idPaciente = 1;
+GO
+
+DELETE FROM Admision.Pacientes
+WHERE idPaciente = 1;
+GO
+
+SELECT * FROM Admision.Pacientes
+
+-- 2. Eliminar un medicamento
+
+
+
+    --Eliminar un medicamento.
+   -- Eliminar una habitación.
+ --   Eliminar citas canceladas.
+    --Eliminar pacientes sin citas.
+  --  Eliminar habitaciones vacías.
+--    Eliminar medicamentos vencidos.
+--    Eliminar registros de prueba.
