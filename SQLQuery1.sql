@@ -174,12 +174,68 @@ CREATE TABLE Farmacia.DetallesTratamientos(
 )
 GO
 
+-- Alterando las tablas
+
 -- Pacientes
--- direccion NVARCHAR(100),
--- fechaNac DATE NOT NULL,
+ALTER TABLE Admision.Pacientes
+ADD
+	telefono NVARCHAR(15),
+	direccion NVARCHAR(30),
+	genero BIT,
+	tipoSangre VARCHAR(3),
+	fechaNac DATE NOT NULL
+GO
+
+ALTER TABLE Admision.Pacientes
+ALTER COLUMN
+	nombres NVARCHAR(100)
+GO
+
+ALTER TABLE Admision.Pacientes
+ALTER COLUMN
+	direccion NVARCHAR(100)
+GO
 
 -- Medicos
--- fechaNac DATE NOT NULL,
--- turno NVARCHAR(30),
--- CONSTRAINT ck_turno
---		CHECK(turno IN (N'Matutino', N'Vespertino', N'Nocturno')),
+ALTER TABLE Atencion.Medicos
+	ADD
+	experiencia NVARCHAR(100),
+	turno NVARCHAR(15),
+	observaciones NVARCHAR(max),
+
+	CONSTRAINT ck_turno CHECK(turno IN ('Matutino', 'Vespertino', N'Nocturno'))
+GO
+
+ALTER TABLE Atencion.Medicos
+	DROP COLUMN observaciones;
+GO
+
+-- Citas
+ALTER TABLE Atencion.Citas
+	ADD
+	costoConsulta int,
+	CONSTRAINT ck_costo CHECK(costoConsulta > 0)
+GO
+
+ALTER TABLE Atencion.Citas
+	DROP CONSTRAINT ck_costo
+GO
+
+ALTER TABLE Atencion.Citas
+	ALTER COLUMN
+	costoConsulta DECIMAL
+GO
+ALTER TABLE Atencion.Citas
+	ADD
+	CONSTRAINT ck_costo CHECK(costoConsulta > 0)
+GO
+
+-- Habitaciones
+ALTER TABLE Admision.Habitaciones
+	ADD
+	disponibilidad nvarchar(15) DEFAULT 'Disponible',
+	CHECK(disponibilidad IN ('Ocupado', 'Disponible'))
+GO
+
+-- Tablas temporales: CREATE TABLE #[NOMBRETABLA]
+-- Tablas temporales globales: CREATE TABLE ##--
