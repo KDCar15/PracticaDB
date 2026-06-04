@@ -239,3 +239,86 @@ GO
 
 -- Tablas temporales: CREATE TABLE #[NOMBRETABLA]
 -- Tablas temporales globales: CREATE TABLE ##--
+
+-----------------------------------------------------
+-- Modulo IV
+-----------------------------------------------------
+
+CREATE TABLE #Temporal
+(
+	idTemporal INT IDENTITY(1,1),
+	dametucosita INT,
+	eselpepetastico BIT,
+	comosellamaesacosa NVARCHAR(50)
+
+	CONSTRAINT ck_comosellama CHECK(comosellamaesacosa LIKE 'Elpipack!!!'),
+	CONSTRAINT uq_damedane UNIQUE(dametucosita)
+)
+GO
+
+ALTER TABLE #Temporal
+DROP CONSTRAINT ck_comosellama
+GO
+
+ALTER TABLE #Temporal
+DROP CONSTRAINT uq_damedane
+GO
+
+ALTER TABLE #Temporal
+DROP COLUMN eselpepetastico
+GO
+
+DROP TABLE #Temporal
+GO
+
+-- Crear y eliminar tabla auditoria
+CREATE TABLE Auditoria
+(
+	idAuditoria INT IDENTITY(1,1),
+)
+GO
+
+DROP TABLE Auditoria
+GO
+
+-- Crear y eliminar tabla logs
+CREATE TABLE Logs
+(
+	idLog INT IDENTITY(1,1),
+)
+GO
+
+DROP TABLE Logs
+GO
+
+-- Eliminar FK
+CREATE TABLE Medicoss2
+(
+	idMedicoss2 INT IDENTITY(1,1),
+	medico INT FOREIGN KEY REFERENCES Atencion.Medicos(idMedico)
+)
+GO
+
+ALTER TABLE Medicoss2
+DROP COLUMN medico
+GO
+
+DROP TABLE Medicoss2
+
+-- Crear y eliminar tabla MedicamentosPrueba
+CREATE TABLE MedicamentosPrueba
+(
+	idPrueba INT IDENTITY(1,1),
+)
+GO
+
+DROP TABLE MedicamentosPrueba
+GO
+
+-- Crear base de datos de prueba y eliminarla
+CREATE DATABASE AllYourBase
+GO
+DROP DATABASE AllYourBase
+GO
+
+---------------------------------------
