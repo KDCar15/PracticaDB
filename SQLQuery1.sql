@@ -295,8 +295,14 @@ GO
 CREATE TABLE Medicoss2
 (
 	idMedicoss2 INT IDENTITY(1,1),
-	medico INT FOREIGN KEY REFERENCES Atencion.Medicos(idMedico)
+	medico INT 
+	
+	CONSTRAINT fk_medico FOREIGN KEY(medico) REFERENCES Atencion.Medicos(idMedico)
 )
+GO
+
+ALTER TABLE Medicoss2
+DROP CONSTRAINT fk_medico
 GO
 
 ALTER TABLE Medicoss2
@@ -318,7 +324,144 @@ GO
 -- Crear base de datos de prueba y eliminarla
 CREATE DATABASE AllYourBase
 GO
+
 DROP DATABASE AllYourBase
 GO
 
 ---------------------------------------
+-- Modulo V
+---------------------------------------
+
+INSERT INTO Atencion.Especialidades(nombre)
+VALUES
+	('Cardiología'),
+	('Pediatría'),
+	('Neurología'),
+	('Dermatología'),
+	('Traumatología');
+GO
+
+INSERT INTO Atencion.Medicos
+(nombres, apellidos, email, direccion, salario, idEspecialidad,	experiencia, turno)
+VALUES
+	('Carlos','Gomez','cgomez@hospital.com','Managua',1500,1,'10 años','Matutino'),
+	('Ana','Martinez','amartinez@hospital.com','Leon',1800,2,'8 años','Vespertino'),
+	('Jorge','Ruiz','jruiz@hospital.com','Masaya',2000,3,'12 años','Nocturno'),
+	('Lucia','Perez','lperez@hospital.com','Granada',1700,4,'6 años','Matutino'),
+	('Mario','Lopez','mlopez@hospital.com','Chinandega',2100,5,'15 años','Vespertino'),
+	('Sofia','Castillo','scastillo@hospital.com','Esteli',1900,1,'9 años','Nocturno'),
+	('Pedro','Mendez','pmendez@hospital.com','Jinotega',1600,2,'5 años','Matutino'),
+	('Rosa','Hernandez','rhernandez@hospital.com','Rivas',2200,3,'14 años','Vespertino'),
+	('Luis','Morales','lmorales@hospital.com','Boaco',1750,4,'7 años','Nocturno'),
+	('Elena','Torres','etorres@hospital.com','Matagalpa',2300,5,'16 años','Matutino');
+GO
+
+INSERT INTO Admision.Pacientes
+(nombres, apellidos, email, telefono, direccion, genero, tipoSangre, fechaNac)
+VALUES
+	('Juan','Perez','juan1@gmail.com','88880001','Managua',1,'O+','1990-01-15'),
+	('Maria','Lopez','maria1@gmail.com','88880002','Leon',0,'A+','1992-03-20'),
+	('Jose','Ruiz','jose1@gmail.com','88880003','Masaya',1,'B+','1988-07-10'),
+	('Ana','Torres','ana1@gmail.com','88880004','Granada',0,'AB+','1995-09-12'),
+	('Luis','Castillo','luis1@gmail.com','88880005','Esteli',1,'O-','1985-05-01'),
+	('Rosa','Mendez','rosa1@gmail.com','88880006','Jinotega',0,'A-','1998-11-25'),
+	('Pedro','Martinez','pedro1@gmail.com','88880007','Rivas',1,'B-','1991-06-15'),
+	('Lucia','Morales','lucia1@gmail.com','88880008','Boaco',0,'AB-','1994-04-30'),
+	('Mario','Hernandez','mario1@gmail.com','88880009','Chontales',1,'O+','1987-08-08'),
+	('Elena','Gomez','elena1@gmail.com','88880010','Carazo',0,'A+','1993-12-19'),
+	('Carlos','Diaz','carlos1@gmail.com','88880011','Managua',1,'B+','1990-02-18'),
+	('Patricia','Perez','patricia1@gmail.com','88880012','Leon',0,'AB+','1997-01-28'),
+	('Andres','Lopez','andres1@gmail.com','88880013','Masaya',1,'O-','1986-10-10'),
+	('Karla','Ruiz','karla1@gmail.com','88880014','Granada',0,'A-','1999-06-05'),
+	('Javier','Torres','javier1@gmail.com','88880015','Esteli',1,'B-','1992-07-17'),
+	('Sandra','Castillo','sandra1@gmail.com','88880016','Jinotega',0,'AB-','1989-09-03'),
+	('Fernando','Mendez','fernando1@gmail.com','88880017','Rivas',1,'O+','1991-04-21'),
+	('Diana','Martinez','diana1@gmail.com','88880018','Boaco',0,'A+','1996-08-14'),
+	('Roberto','Morales','roberto1@gmail.com','88880019','Carazo',1,'B+','1984-12-02'),
+	('Valeria','Hernandez','valeria1@gmail.com','88880020','Chinandega',0,'AB+','2000-03-09');
+GO
+
+INSERT INTO Atencion.Citas(fechaHora, estado, idPaciente, idMedico, costoConsulta)
+VALUES
+	(GETDATE(),'Completada',1,1,25),
+	(GETDATE(),'Completada',2,2,30),
+	(GETDATE(),'Completada',3,3,35),
+	(GETDATE(),'Completada',4,4,20),
+	(GETDATE(),'Completada',5,5,40),
+
+	(DATEADD(DAY,1,GETDATE()),'Programada',6,6,25),
+	(DATEADD(DAY,2,GETDATE()),'Programada',7,7,30),
+	(DATEADD(DAY,3,GETDATE()),'Programada',8,8,35),
+	(DATEADD(DAY,4,GETDATE()),'Programada',9,9,20),
+	(DATEADD(DAY,5,GETDATE()),'Programada',10,10,40),
+
+	(DATEADD(DAY,6,GETDATE()),'Programada',11,1,25),
+	(DATEADD(DAY,7,GETDATE()),'Programada',12,2,30),
+	(DATEADD(DAY,8,GETDATE()),'Programada',13,3,35),
+	(DATEADD(DAY,9,GETDATE()),'Programada',14,4,20),
+	(DATEADD(DAY,10,GETDATE()),'Programada',15,5,40);
+GO
+
+INSERT INTO Admision.Habitaciones(codigo,idPaciente, disponibilidad) VALUES
+	('A101',1,'Ocupado'),
+	('A102',2,'Ocupado'),
+	('A103',3,'Ocupado'),
+	('A104',4,'Ocupado'),
+	('A105',5,'Ocupado'),
+
+	('B101',NULL,'Disponible'),
+	('B102',NULL,'Disponible'),
+	('B103',NULL,'Disponible'),
+	('B104',NULL,'Disponible'),
+	('B105',NULL,'Disponible');
+GO
+
+INSERT INTO Farmacia.Tratamientos(idPaciente)
+VALUES
+	(1),(2),(3),(4),(5),
+	(6),(7),(8),(9),(10);
+GO
+
+UPDATE Farmacia.Tratamientos
+	SET deletedAt = GETDATE()
+	WHERE idTratamiento IN (6,7,8,9,10);
+GO
+
+INSERT INTO Farmacia.Medicamentos(nombre)
+VALUES
+	('Paracetamol'),
+	('Ibuprofeno'),
+	('Amoxicilina'),
+	('Omeprazol'),
+	('Loratadina'),
+	('Metformina'),
+	('Losartan'),
+	('Aspirina'),
+	('Diclofenaco'),
+	('Azitromicina'),
+	('Claritromicina'),
+	('Insulina'),
+	('Salbutamol'),
+	('Prednisona'),
+	('Cefalexina'),
+	('Vitamina C'),
+	('Vitamina D'),
+	('Acetaminofen'),
+	('Enalapril'),
+	('Ranitidina');
+GO
+
+INSERT INTO Farmacia.DetallesTratamientos
+(idMedicamento,dosis)
+VALUES
+	(1,500),
+	(2,400),
+	(3,250),
+	(4,20),
+	(5,10),
+	(6,850),
+	(7,50),
+	(8,100),
+	(9,75),
+	(10,500);
+GO
